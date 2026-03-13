@@ -8,11 +8,42 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-
+<!-- Header Section-->
 <header>
     <div class="logo">THE <span>COMICAL</span></div>
     <div class="header-statistic">
         <div class="stat-item"><strong id="stat-total">0</strong> ISSUES</div>
-
+        <div class="stat-item"><strong id="stat-read">0</strong> READ</div>
+        <div class="stat-item" style="color: darkgoldenrod;"><strong id="stat-wishlist">0</strong> WISHLIST</div>
     </div>
+    <button class="add-btn" id="addIssueBtn" onclick="onAddBtn()">+ADD ISSUE</button>
 </header>
+
+<div class="tab-nav">
+    <button class="tab-btn active" onclick="switchTab('collection', this)">The Collection</button>
+    <button class="tab-btn"        onclick="switchTab('timeline',   this)">The Timelines</button>
+</div>
+
+<div id="viewCollection">
+    <div class="filter-bar">
+        <span class="filter-label">Filter by:</span>
+        <button class="filter-btn active" onclick="filterIssues('all', this)">All</button>
+        <button class="filter-btn status-read" onclick="filterIssues('read', this)">Read</button>
+        <button class="filter-btn status-reading" onclick="filterIssues('unread', this)">Unread</button>
+        <button class="filter-btn status-unread" onclick="filterIssues('unread', this)">Unread</button>
+        <button class="filter-btn status-wishlist" onclick="filterIssues('wishlist', this)">Wishlist</button>
+        <input type="text" id="searchInput" class="search-input" placeholder="Search by title..." oninput="filterIssues('search', this.value)">
+    </div>
+    </div class="grid" id="issuesGrid">
+</div>
+
+<div id="viewTimeline" style="display: none;">
+    <div class="timeline-toolbar">
+        <span class="tl-label">Timeline:</span>
+        <select class="tl-select" id="tl-select" onchange="selectTimeline(this.value)">
+            <option value="">Select a timeline</option>
+        </select>
+        <button class="tl-add-btn" onclick="onAddTimeline()">+ Add Timeline</button>
+        
+        <button class="tl-delete-btn" onclick="onDeleteTimeline()">Delete Timeline</button>
+    </div>
