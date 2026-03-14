@@ -1,0 +1,35 @@
+@import url('https://fonts.googleapis.com/css2?family=Bangers&family=Barlow+Condensed:wght@400;600;700&family=Barlow:wght@400;500&display=swap');
+
+:root {
+  --ink:    #0d0d0d;
+  --paper:  #f5f0e8;
+  --panel:  #fffdf7;
+  --red:    #e81a1a;
+  --yellow: #f5c518;
+  --blue:   #1a3a8f;
+  --green:  #1a7a3a;
+  --purple: #5a0a8f;
+  --border: 3px solid var(--ink);
+  --shadow: 4px 4px 0 var(--ink);
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  background-color: var(--paper);
+  background-image:
+    repeating-linear-gradient(0deg,   transparent, transparent 27px, rgba(0,0,0,0.04) 27px, rgba(0,0,0,0.04) 28px),
+    repeating-linear-gradient(90deg,  transparent, transparent 27px, rgba(0,0,0,0.04) 27px, rgba(0,0,0,0.04) 28px);
+  font-family: 'Barlow', sans-serif;
+  color: var(--ink);
+  min-height: 100vh;
+}
+
+@keyframes popIn {
+  from { transform: scale(0.85) rotate(-2deg); opacity: 0; }
+  to   { transform: scale(1)    rotate(0deg);  opacity: 1; }
+}
+@keyframes slideUp {
+  from { transform: translateY(30px); opacity: 0; }
+  to   { transform: translateY(0);    opacity: 1; }
+}
