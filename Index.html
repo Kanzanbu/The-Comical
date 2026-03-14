@@ -43,7 +43,123 @@
         <select class="tl-select" id="tl-select" onchange="selectTimeline(this.value)">
             <option value="">Select a timeline</option>
         </select>
-        <button class="tl-add-btn" onclick="onAddTimeline()">+ Add Timeline</button>
-        
-        <button class="tl-delete-btn" onclick="onDeleteTimeline()">Delete Timeline</button>
+        <button class="tl-btn tl-btn-blue"  onclick="openNewTLModal()">+ NEW TIMELINE</button>
+        <button class="tl-btn tl-btn-green" id="tl-add-btn" style="display:none" onclick="openAddToTLModal()">+ ADD ISSUE</button>
+        <button class="tl-btn-del"          id="tl-del-btn" style="display:none" onclick="deleteTimeline()">DELETE</button>
+  </div>
+  <div class="timeline-container" id="timeline-container">
+    <div class="no-tl-empty">
+      <h2>NO TIMELINE YET</h2>
+      <p>Create a timeline to map out reading orders and story arcs.</p>
     </div>
+  </div>
+</div>
+
+div class="modal-overlay" id="modal" onclick="if(event.target===this) closeModal('modal')">
+  <div class="modal">
+    <div class="modal-header">
+      <span class="modal-title">ADD TO THE BOX</span>
+      <button class="modal-close" onclick="closeModal('modal')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div>
+        <label>Title *</label>
+        <input type="text" id="f-title" placeholder="e.g. Amazing Spider-Man">
+      </div>
+      <div class="form-row-2">
+        <div>
+          <label>Series / Publisher</label>
+          <input type="text" id="f-series" placeholder="e.g. Marvel">
+        </div>
+        <div>
+          <label>Issue #</label>
+          <input type="text" id="f-issue" placeholder="e.g. #1">
+        </div>
+      </div>
+      <div>
+        <label>Cover Image URL <span class="note">(optional)</span></label>
+        <input type="url" id="f-cover" placeholder="https://…">
+      </div>
+      <div>
+        <label>Status</label>
+        <div class="status-picker">
+          <div class="status-option selected" data-val="unread"  onclick="pickStatus(this)">Unread</div>
+          <div class="status-option"          data-val="reading" onclick="pickStatus(this)">Reading</div>
+          <div class="status-option"          data-val="read"    onclick="pickStatus(this)">Read</div>
+          <div class="status-option"          data-val="wishlist"onclick="pickStatus(this)">Wishlist</div>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="save-btn" onclick="saveComic()">ADD TO COLLECTION</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== MODAL: New Timeline ===== -->
+<div class="modal-overlay" id="modal-newtl" onclick="if(event.target===this) closeModal('modal-newtl')">
+  <div class="modal">
+    <div class="modal-header modal-header--blue">
+      <span class="modal-title">NEW TIMELINE</span>
+      <button class="modal-close" onclick="closeModal('modal-newtl')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div>
+        <label>Timeline Name *</label>
+        <input type="text" id="tl-name-input" placeholder="e.g. Civil War Reading Order">
+      </div>
+      <div>
+        <label>Description <span class="note">(optional)</span></label>
+        <input type="text" id="tl-desc-input" placeholder="e.g. Full arc in publication order">
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="save-btn save-btn--blue" onclick="saveNewTimeline()">CREATE TIMELINE</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== MODAL: Add Issue to Timeline ===== -->
+<div class="modal-overlay" id="modal-addtl" onclick="if(event.target===this) closeModal('modal-addtl')">
+  <div class="modal">
+    <div class="modal-header modal-header--purple">
+      <span class="modal-title">ADD TO TIMELINE</span>
+      <button class="modal-close" onclick="closeModal('modal-addtl')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div>
+        <label>Pick from your collection</label>
+        <select id="tl-issue-pick">
+          <option value="">— choose an issue —</option>
+        </select>
+      </div>
+      <div class="form-row-2">
+        <div>
+          <label>Date / Year <span class="note">(optional)</span></label>
+          <input type="text" id="tl-entry-date" placeholder="e.g. 2006">
+        </div>
+        <div>
+          <label>Position</label>
+          <select id="tl-entry-pos">
+            <option value="end">At the end</option>
+            <option value="start">At the start</option>
+          </select>
+        </div>
+      </div>
+      <div>
+        <label>Note <span class="note">(optional)</span></label>
+        <input type="text" id="tl-entry-note" placeholder="e.g. Key turning point">
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="save-btn save-btn--purple" onclick="saveIssueToTimeline()">ADD TO TIMELINE</button>
+    </div>
+  </div>
+</div>
+
+<!-- decorative halftone corner -->
+<div class="halftone-accent"></div>
+
+<script src="app.js"></script>
+</body>
+</html>
