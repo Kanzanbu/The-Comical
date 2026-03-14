@@ -33,3 +33,41 @@ body {
   from { transform: translateY(30px); opacity: 0; }
   to   { transform: translateY(0);    opacity: 1; }
 }
+
+/* Header Styles */
+header {
+  background: var(--ink);
+  border-bottom: 5px solid var(--yellow);
+  padding: 16px 32px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.logo {
+  font-family: 'Bangers', cursive;
+  font-size: 2.8rem;
+  color: var(--yellow);
+  letter-spacing: 3px;
+  text-shadow: 3px 3px 0 var(--red);
+  line-height: 1;
+}
+.logo span { color: var(--red); }
+
+.header-stats { display: flex; gap: 20px; }
+
+.stat-pill {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-weight: 700;
+  font-size: 0.85rem;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: var(--yellow);
+}
+.stat-pill strong { font-size: 1.1rem; margin-right: 4px; }
+
