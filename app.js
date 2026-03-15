@@ -121,3 +121,80 @@ function pickStatus(el) {
   el.classList.add('selected');
   selectedStatus = el.dataset.val;
 }
+
+
+unction openModal(id)  { document.getElementById(id).classList.add('open'); }
+function closeModal(id) { document.getElementById(id).classList.remove('open'); if (id === 'modal') clearAddForm(); }
+
+function clearAddForm() {
+  ['f-title','f-series','f-issue','f-cover'].forEach(id => document.getElementById(id).value = '');
+  selectedStatus = 'unread';
+  document.querySelectorAll('#modal .status-option')
+    .forEach(o => o.classList.toggle('selected', o.dataset.val === 'unread'));
+}
+
+function saveComic() {
+  const title = document.getElementById('f-title').value.trim();
+  if (!title) { document.getElementById('f-title').focus(); return; }
+  comics.unshift({
+    id:     Date.now(),
+    title,
+    series: document.getElementById('f-series').value.trim(),
+    issue:  document.getElementById('f-issue').value.trim(),
+    cover:  document.getElementById('f-cover').value.trim(),
+    status: selectedStatus
+  });
+  persist(); render(); closeModal('modal');
+}
+
+/* TIMELINES */
+function refreshTLSelector() {
+  const sel = document.getElementById('tl-select');
+  sel.innerHTML = '<option value="">— select a timeline —</option>' +
+    timelines.map(tl => `<option value="${tl.id}"${tl.id === currentTLId ? ' selected' : ''}>${esc(tl.name)}</option>`).join('');
+  if (currentTLId) renderTimeline();
+}
+
+function selectTimeline(val) {
+  currentTLId = val ? parseInt(val) : null;
+  renderTimeline();
+}
+
+function renderTimeline() {
+  const container = document.getElementById('timeline-container');
+  const addBtn    = document.getElementById('tl-add-btn');
+  const delBtn    = document.getElementById('tl-del-btn');
+
+  if (!currentTLId) {
+    addBtn.style.display = 'none';
+    delBtn.style.display = 'none';
+    container.innerHTML = `
+      <div class="no-tl-empty">
+        <span class="big-icon">📅</span>
+        <h2>NO TIMELINE SELECTED</h2>
+        <p>Create a new timeline or select one above.</p>
+      </div>`;
+    return;
+  }
+
+  const tl = timelines.find(t => t.id === currentTLId);
+  if (!tl) return;
+  addBtn.style.display = '';
+  delBtn.style.display = '';
+
+  const headerHTML = `
+    <div class="tl-header-row">
+      <span class="tl-title-text">${esc(tl.name)}</span>
+      ${tl.desc ? `<span class="tl-desc-text">${esc(tl.desc)}</span>` : ''}
+      <span class="tl-count">${tl.entries.length} issue${tl.entries.length !== 1 ? 's' : ''}</span>
+    </div>`;
+
+  if (!tl.entries.length) {
+    container.innerHTML = headerHTML + `
+      <div class="timeline-empty-inner">
+        <span class="big-icon">🕳️</span>
+        <h2>EMPTY TIMELINE</h2>
+        <p>Click "+ ADD ISSUE" above to start placing issues.</p>
+      </div>`;
+    return;
+  }
