@@ -122,8 +122,8 @@ function pickStatus(el) {
   selectedStatus = el.dataset.val;
 }
 
-
-unction openModal(id)  { document.getElementById(id).classList.add('open'); }
+/*Modals*/
+function openModal(id)  { document.getElementById(id).classList.add('open'); }
 function closeModal(id) { document.getElementById(id).classList.remove('open'); if (id === 'modal') clearAddForm(); }
 
 function clearAddForm() {
@@ -147,7 +147,7 @@ function saveComic() {
   persist(); render(); closeModal('modal');
 }
 
-/* TIMELINES */
+/*Timeline View*/
 function refreshTLSelector() {
   const sel = document.getElementById('tl-select');
   sel.innerHTML = '<option value="">— select a timeline —</option>' +
@@ -198,3 +198,84 @@ function renderTimeline() {
       </div>`;
     return;
   }
+
+  /* Build strip nodes */
+  let strip = '';
+  let lastYear = null;
+
+  tl.entries.forEach((entry, i) => {
+    const comic = comics.find(c => c.id === entry.comicId);
+    if (!comic) return;
+
+    /* Optional year badge */
+    const yr = entry.date ? (entry.date.match(/\d{4}/) || [''])[0] : null;
+    if (yr && yr !== lastYear) {
+      strip += `<div class="tl-year-spacer"><div class="tl-year-badge">${yr}</div></div>`;
+      lastYear = yr;
+    }
+
+    const above = i % 2 === 0;
+    const cv = comic.cover
+      ? `<img class="tl-cover" src="${esc(comic.cover)}" alt="${esc(comic.title)}"
+             onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+         <div class="tl-cover-ph" style="display:none">📖</div>`
+      : `<div class="tl-cover-ph">📖</div>`;
+
+    const infoHTML = `
+      <div class="tl-info">
+        <div class="tl-ctitle">${esc(comic.title)}</div>
+        ${comic.issue  ? `<div class="tl-cissue">#${esc(comic.issue)}</div>` : ''}
+        ${entry.date   ? `<div class="tl-cdate">${esc(entry.date)}</div>`   : ''}
+        ${entry.note   ? `<div class="tl-cnote">${esc(entry.note)}</div>`   : ''}
+      </div>`;
+
+    const cardHTML = `
+      <div class="tl-card">
+        ${cv}${infoHTML}
+        <button class="tl-remove" onclick="removeTLEntry(event,${i})">✕</button>
+      </div>`;
+
+    const spacer = `<div style="width:128px;height:1px"></div>`;
+    const armDown = `<div class="tl-arm"></div>`;
+    const armUp   = `<div class="tl-arm"></div>`;
+
+    if (above) {
+      strip += `
+        <div class="tl-item">
+          ${cardHTML}
+          ${armDown}
+          <div class="tl-dot dot-${comic.status}"></div>
+          ${armDown}
+          ${spacer}
+        </div>`;
+    } else {
+      strip += `
+        <div class="tl-item">
+          ${spacer}
+          ${armUp}
+          <div class="tl-dot dot-${comic.status}"></div>
+          ${armUp}
+          ${cardHTML}
+        </div>`;
+    }
+  });
+
+/* Add-more node */
+  strip += `
+    <div class="tl-add-node" onclick="openAddToTLModal()">
+      <div class="tl-add-ring">+</div>
+      <div class="tl-add-text">Add Issue</div>
+    </div>`;
+
+  container.innerHTML = headerHTML + `<div class="tl-strip-wrap"><div class="tl-strip">${strip}</div></div>`;
+}
+
+function removeTLEntry(e, idx) {
+  e.stopPropagation();
+  const tl = timelines.find(t => t.id === currentTLId);
+  if (!tl) return;
+  tl.entries.splice(idx, 1);
+  persist(); renderTimeline();
+}
+
+
