@@ -1,3 +1,30 @@
+// ===== THEME MANAGEMENT =====
+function toggleDarkMode() {
+  document.body.classList.toggle('dark-mode');
+  const isDarkMode = document.body.classList.contains('dark-mode');
+  localStorage.setItem('dark-mode', isDarkMode);
+  updateThemeIcon();
+}
+
+function updateThemeIcon() {
+  const toggle = document.getElementById('theme-toggle');
+  if (document.body.classList.contains('dark-mode')) {
+    toggle.textContent = '☀️';
+    toggle.title = 'Toggle Light Mode';
+  } else {
+    toggle.textContent = '🌙';
+    toggle.title = 'Toggle Dark Mode';
+  }
+}
+
+function initializeTheme() {
+  const darkModeSetting = localStorage.getItem('dark-mode');
+  if (darkModeSetting === 'true') {
+    document.body.classList.add('dark-mode');
+  }
+  updateThemeIcon();
+}
+
 // ===== STATE MANAGEMENT =====
 let comics = JSON.parse(localStorage.getItem('comics') || '[]');
 let timelines = JSON.parse(localStorage.getItem('comic-timelines') || '[]');
@@ -550,6 +577,9 @@ function initializeSampleData() {
 
 // ===== INITIALIZATION =====
 document.addEventListener('DOMContentLoaded', () => {
+  // Initialize theme
+  initializeTheme();
+  
   // Load or initialize with sample data on first visit
   if (comics.length === 0) {
     initializeSampleData();
