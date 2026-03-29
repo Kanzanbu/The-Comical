@@ -4,161 +4,198 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>The Comical</title>
+    <title>The Comical - Comic Tracker</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
+
 <!-- Header Section-->
 <header>
     <div class="logo">THE <span>COMICAL</span></div>
-    <div class="header-statistic">
-        <div class="stat-item"><strong id="stat-total">0</strong> ISSUES</div>
-        <div class="stat-item"><strong id="stat-read">0</strong> READ</div>
-        <div class="stat-item" style="color: darkgoldenrod;"><strong id="stat-wishlist">0</strong> WISHLIST</div>
+    <div class="header-statistics">
+        <div class="stat-item">
+            <strong id="stat-total">0</strong>
+            <span>ISSUES</span>
+        </div>
+        <div class="stat-item">
+            <strong id="stat-read">0</strong>
+            <span>READ</span>
+        </div>
+        <div class="stat-item wishlist-stat">
+            <strong id="stat-wishlist">0</strong>
+            <span>WISHLIST</span>
+        </div>
     </div>
-    <button class="add-btn" id="addIssueBtn" onclick="onAddBtn()">+ADD ISSUE</button>
+    <button class="add-btn" id="addIssueBtn" onclick="onAddBtn()">+ ADD ISSUE</button>
 </header>
 
+<!-- Tab Navigation -->
 <div class="tab-nav">
-    <button class="tab-btn active" onclick="switchTab('collection', this)">The Collection</button>
-    <button class="tab-btn"        onclick="switchTab('timeline',   this)">The Timelines</button>
+    <button class="tab-btn active" onclick="switchTab('collection', this)">📚 The Collection</button>
+    <button class="tab-btn" onclick="switchTab('timeline', this)">📖 The Timeline</button>
 </div>
 
-<div id="viewCollection">
-    <div class="filter-bar">
-        <span class="filter-label">Filter by:</span>
-        <button class="filter-btn active" onclick="filterIssues('all', this)">All</button>
-        <button class="filter-btn status-read" onclick="filterIssues('read', this)">Read</button>
-        <button class="filter-btn status-reading" onclick="filterIssues('unread', this)">Unread</button>
-        <button class="filter-btn status-unread" onclick="filterIssues('unread', this)">Unread</button>
-        <button class="filter-btn status-wishlist" onclick="filterIssues('wishlist', this)">Wishlist</button>
-        <input type="text" id="searchInput" class="search-input" placeholder="Search by title..." oninput="filterIssues('search', this.value)">
-    </div>
-    </div class="grid" id="issuesGrid">
-</div>
-
-<div id="viewTimeline" style="display: none;">
-    <div class="timeline-toolbar">
-        <span class="tl-label">Timeline:</span>
-        <select class="tl-select" id="tl-select" onchange="selectTimeline(this.value)">
-            <option value="">Select a timeline</option>
-        </select>
-        <button class="tl-btn tl-btn-blue"  onclick="openNewTLModal()">+ NEW TIMELINE</button>
-        <button class="tl-btn tl-btn-green" id="tl-add-btn" style="display:none" onclick="openAddToTLModal()">+ ADD ISSUE</button>
-        <button class="tl-btn-del"          id="tl-del-btn" style="display:none" onclick="deleteTimeline()">DELETE</button>
-  </div>
-  <div class="timeline-container" id="timeline-container">
-    <div class="no-tl-empty">
-      <h2>NO TIMELINE YET</h2>
-      <p>Create a timeline to map out reading orders and story arcs.</p>
-    </div>
-  </div>
-</div>
-
-div class="modal-overlay" id="modal" onclick="if(event.target===this) closeModal('modal')">
-  <div class="modal">
-    <div class="modal-header">
-      <span class="modal-title">ADD TO THE BOX</span>
-      <button class="modal-close" onclick="closeModal('modal')">✕</button>
-    </div>
-    <div class="modal-body">
-      <div>
-        <label>Title *</label>
-        <input type="text" id="f-title" placeholder="e.g. Amazing Spider-Man">
-      </div>
-      <div class="form-row-2">
-        <div>
-          <label>Series / Publisher</label>
-          <input type="text" id="f-series" placeholder="e.g. Marvel">
+<!-- Collection View -->
+<div id="view-collection" class="tab-content active">
+    <div class="container">
+        <div class="filter-bar">
+            <span class="filter-label">Filter by Status:</span>
+            <button class="filter-btn active" onclick="filterIssues('all', this)">All Issues</button>
+            <button class="filter-btn status-read" onclick="filterIssues('read', this)">✓ Read</button>
+            <button class="filter-btn status-reading" onclick="filterIssues('reading', this)">👀 Reading</button>
+            <button class="filter-btn status-unread" onclick="filterIssues('unread', this)">○ Unread</button>
+            <button class="filter-btn status-wishlist" onclick="filterIssues('wishlist', this)">⭐ Wishlist</button>
         </div>
-        <div>
-          <label>Issue #</label>
-          <input type="text" id="f-issue" placeholder="e.g. #1">
+        
+        <div class="search-bar">
+            <input type="text" id="searchInput" class="search-input" placeholder="🔍 Search by title, author, or series..." oninput="filterIssues('search', this.value)">
         </div>
-      </div>
-      <div>
-        <label>Cover Image URL <span class="note">(optional)</span></label>
-        <input type="url" id="f-cover" placeholder="https://…">
-      </div>
-      <div>
-        <label>Status</label>
-        <div class="status-picker">
-          <div class="status-option selected" data-val="unread"  onclick="pickStatus(this)">Unread</div>
-          <div class="status-option"          data-val="reading" onclick="pickStatus(this)">Reading</div>
-          <div class="status-option"          data-val="read"    onclick="pickStatus(this)">Read</div>
-          <div class="status-option"          data-val="wishlist"onclick="pickStatus(this)">Wishlist</div>
+
+        <div class="grid" id="issuesGrid">
+            <!-- Issues will be rendered here -->
         </div>
-      </div>
     </div>
-    <div class="modal-footer">
-      <button class="save-btn" onclick="saveComic()">ADD TO COLLECTION</button>
-    </div>
-  </div>
 </div>
 
-<!-- ===== MODAL: New Timeline ===== -->
-<div class="modal-overlay" id="modal-newtl" onclick="if(event.target===this) closeModal('modal-newtl')">
-  <div class="modal">
-    <div class="modal-header modal-header--blue">
-      <span class="modal-title">NEW TIMELINE</span>
-      <button class="modal-close" onclick="closeModal('modal-newtl')">✕</button>
+<!-- Timeline View -->
+<div id="view-timeline" class="tab-content" style="display: none;">
+    <div class="container">
+        <div class="timeline-toolbar">
+            <span class="tl-label">Select Timeline:</span>
+            <select class="tl-select" id="tl-select" onchange="selectTimeline(this.value)">
+                <option value="">Choose a timeline...</option>
+            </select>
+            <button class="tl-btn tl-btn-blue" onclick="openNewTimelineModal()">+ NEW TIMELINE</button>
+            <button class="tl-btn tl-btn-green" id="tl-add-btn" style="display:none" onclick="openAddToTimelineModal()">+ ADD ISSUE</button>
+            <button class="tl-btn tl-btn-red" id="tl-del-btn" style="display:none" onclick="deleteTimeline()">DELETE TIMELINE</button>
+        </div>
+        <div class="timeline-container" id="timeline-container">
+            <!-- Timeline will be rendered here -->
+        </div>
     </div>
-    <div class="modal-body">
-      <div>
-        <label>Timeline Name *</label>
-        <input type="text" id="tl-name-input" placeholder="e.g. Civil War Reading Order">
-      </div>
-      <div>
-        <label>Description <span class="note">(optional)</span></label>
-        <input type="text" id="tl-desc-input" placeholder="e.g. Full arc in publication order">
-      </div>
+</div>
+<!-- Modal: Add/Edit Issue -->
+<div id="modal-issue" class="modal" style="display: none;">
+    <div class="modal-content">
+        <button class="modal-close" onclick="closeModal('modal-issue')">&times;</button>
+        <h2 id="modal-title">Add New Issue</h2>
+        
+        <form onsubmit="saveIssue(event)">
+            <div class="form-group">
+                <label for="issue-title">Comic Title *</label>
+                <input type="text" id="issue-title" required placeholder="e.g., The Amazing Spider-Man">
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="issue-series">Series</label>
+                    <input type="text" id="issue-series" placeholder="e.g., Marvel">
+                </div>
+                <div class="form-group">
+                    <label for="issue-number">Issue #</label>
+                    <input type="number" id="issue-number" placeholder="e.g., 1">
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="issue-author">Author</label>
+                    <input type="text" id="issue-author" placeholder="e.g., Stan Lee">
+                </div>
+                <div class="form-group">
+                    <label for="issue-artist">Artist</label>
+                    <input type="text" id="issue-artist" placeholder="e.g., Steve Ditko">
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="issue-date">Release Date</label>
+                    <input type="date" id="issue-date">
+                </div>
+                <div class="form-group">
+                    <label for="issue-status">Status *</label>
+                    <select id="issue-status" required>
+                        <option value="unread">○ Unread</option>
+                        <option value="reading">👀 Reading</option>
+                        <option value="read">✓ Read</option>
+                        <option value="wishlist">⭐ Wishlist</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="issue-description">Description</label>
+                <textarea id="issue-description" placeholder="Write your thoughts or notes about this comic..." rows="3"></textarea>
+            </div>
+
+            <div class="form-group">
+                <label for="issue-rating">Rating (1-5)</label>
+                <input type="number" id="issue-rating" min="1" max="5" placeholder="5">
+            </div>
+
+            <div class="form-actions">
+                <button type="submit" class="btn btn-primary">Save Issue</button>
+                <button type="button" class="btn btn-secondary" onclick="closeModal('modal-issue')">Cancel</button>
+            </div>
+        </form>
     </div>
-    <div class="modal-footer">
-      <button class="save-btn save-btn--blue" onclick="saveNewTimeline()">CREATE TIMELINE</button>
-    </div>
-  </div>
 </div>
 
-<!-- ===== MODAL: Add Issue to Timeline ===== -->
-<div class="modal-overlay" id="modal-addtl" onclick="if(event.target===this) closeModal('modal-addtl')">
-  <div class="modal">
-    <div class="modal-header modal-header--purple">
-      <span class="modal-title">ADD TO TIMELINE</span>
-      <button class="modal-close" onclick="closeModal('modal-addtl')">✕</button>
+<!-- Modal: New Timeline -->
+<div id="modal-timeline" class="modal" style="display: none;">
+    <div class="modal-content">
+        <button class="modal-close" onclick="closeModal('modal-timeline')">&times;</button>
+        <h2>Create New Timeline</h2>
+        
+        <form onsubmit="saveTimeline(event)">
+            <div class="form-group">
+                <label for="timeline-name">Timeline Name *</label>
+                <input type="text" id="timeline-name" required placeholder="e.g., Spider-Man Saga, X-Men Origins">
+            </div>
+
+            <div class="form-group">
+                <label for="timeline-description">Description</label>
+                <textarea id="timeline-description" placeholder="Describe this timeline..." rows="3"></textarea>
+            </div>
+
+            <div class="form-actions">
+                <button type="submit" class="btn btn-primary">Create Timeline</button>
+                <button type="button" class="btn btn-secondary" onclick="closeModal('modal-timeline')">Cancel</button>
+            </div>
+        </form>
     </div>
-    <div class="modal-body">
-      <div>
-        <label>Pick from your collection</label>
-        <select id="tl-issue-pick">
-          <option value="">— choose an issue —</option>
-        </select>
-      </div>
-      <div class="form-row-2">
-        <div>
-          <label>Date / Year <span class="note">(optional)</span></label>
-          <input type="text" id="tl-entry-date" placeholder="e.g. 2006">
-        </div>
-        <div>
-          <label>Position</label>
-          <select id="tl-entry-pos">
-            <option value="end">At the end</option>
-            <option value="start">At the start</option>
-          </select>
-        </div>
-      </div>
-      <div>
-        <label>Note <span class="note">(optional)</span></label>
-        <input type="text" id="tl-entry-note" placeholder="e.g. Key turning point">
-      </div>
-    </div>
-    <div class="modal-footer">
-      <button class="save-btn save-btn--purple" onclick="saveIssueToTimeline()">ADD TO TIMELINE</button>
-    </div>
-  </div>
 </div>
 
-<!-- decorative halftone corner -->
-<div class="halftone-accent"></div>
+<!-- Modal: Add Issue to Timeline -->
+<div id="modal-add-to-timeline" class="modal" style="display: none;">
+    <div class="modal-content">
+        <button class="modal-close" onclick="closeModal('modal-add-to-timeline')">&times;</button>
+        <h2>Add Issue to Timeline</h2>
+        
+        <form onsubmit="addIssueToTimeline(event)">
+            <div class="form-group">
+                <label for="timeline-issue-select">Select Comic *</label>
+                <select id="timeline-issue-select" required>
+                    <option value="">Choose an issue...</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="timeline-order">Order in Timeline</label>
+                <input type="number" id="timeline-order" placeholder="1">
+            </div>
+
+            <div class="form-actions">
+                <button type="submit" class="btn btn-primary">Add to Timeline</button>
+                <button type="button" class="btn btn-secondary" onclick="closeModal('modal-add-to-timeline')">Cancel</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Toast Notification -->
+<div id="toast" class="toast"></div>
 
 <script src="app.js"></script>
 </body>
