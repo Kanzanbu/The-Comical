@@ -26,7 +26,11 @@
             <span>WISHLIST</span>
         </div>
     </div>
-    <button class="add-btn" id="addIssueBtn" onclick="onAddBtn()">+ ADD ISSUE</button>
+    <div class="header-actions">
+        <button class="header-btn" title="Export Collection" onclick="exportData()">⬇️</button>
+        <button class="header-btn" title="Settings" onclick="openSettingsModal()">⚙️</button>
+    </div>
+    <button class="add-btn" id="addIssueBtn" onclick="onAddBtn()">+ ADD</button>
 </header>
 
 <!-- Tab Navigation -->
@@ -191,6 +195,57 @@
                 <button type="button" class="btn btn-secondary" onclick="closeModal('modal-add-to-timeline')">Cancel</button>
             </div>
         </form>
+    </div>
+</div>
+
+<!-- Modal: Settings -->
+<div id="modal-settings" class="modal" style="display: none;">
+    <div class="modal-content">
+        <button class="modal-close" onclick="closeModal('modal-settings')">&times;</button>
+        <h2>Settings & Data</h2>
+        
+        <div class="settings-section">
+            <h3>Data Management</h3>
+            <p style="color: #666; font-size: 0.9rem; margin-bottom: 10px;">Export or delete your collection data</p>
+            <div class="settings-actions">
+                <button class="setting-btn setting-btn-blue" onclick="exportData()">📥 Export as JSON</button>
+                <button class="setting-btn setting-btn-green" onclick="importData()">📤 Import JSON</button>
+                <button class="setting-btn setting-btn-red" onclick="clearAllData()">🗑️ Clear All Data</button>
+            </div>
+        </div>
+
+        <div class="settings-section">
+            <h3>Collection Stats</h3>
+            <div class="stats-grid">
+                <div class="stat-box">
+                    <span class="stat-value" id="total-count">0</span>
+                    <span class="stat-label">Total Issues</span>
+                </div>
+                <div class="stat-box">
+                    <span class="stat-value" id="read-count">0</span>
+                    <span class="stat-label">Read</span>
+                </div>
+                <div class="stat-box">
+                    <span class="stat-value" id="reading-count">0</span>
+                    <span class="stat-label">Reading</span>
+                </div>
+                <div class="stat-box">
+                    <span class="stat-value" id="wishlist-count">0</span>
+                    <span class="stat-label">Wishlist</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="settings-section">
+            <h3>Timeline Info</h3>
+            <p style="color: #666; font-size: 0.9rem;">
+                Timelines Created: <strong id="timeline-count">0</strong>
+            </p>
+        </div>
+
+        <div class="form-actions" style="margin-top: 20px;">
+            <button class="btn btn-secondary" onclick="closeModal('modal-settings')">Close</button>
+        </div>
     </div>
 </div>
 

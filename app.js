@@ -398,6 +398,11 @@ function deleteTimeline() {
 
 // ===== INITIALIZATION =====
 document.addEventListener('DOMContentLoaded', () => {
+  // Load or initialize with sample data on first visit
+  if (comics.length === 0) {
+    initializeSampleData();
+  }
+  
   updateStats();
   renderCollection();
   refreshTimelineSelector();
@@ -426,6 +431,158 @@ document.addEventListener('click', (e) => {
     e.target.style.display = 'none';
   }
 });
+
+// ===== SAMPLE DATA =====
+function initializeSampleData() {
+  const sampleComics = [
+    {
+      id: 1,
+      title: 'The Amazing Spider-Man',
+      series: 'Marvel',
+      issueNumber: 1,
+      author: 'Stan Lee',
+      artist: 'Steve Ditko',
+      releaseDate: '1962-06-01',
+      status: 'read',
+      description: 'The first appearance of Spider-Man!',
+      rating: 5
+    },
+    {
+      id: 2,
+      title: 'X-Men #1',
+      series: 'Marvel',
+      issueNumber: 1,
+      author: 'Stan Lee',
+      artist: 'Jack Kirby',
+      releaseDate: '1963-09-01',
+      status: 'read',
+      description: 'The birth of the X-Men',
+      rating: 5
+    },
+    {
+      id: 3,
+      title: 'Detective Comics',
+      series: 'DC',
+      issueNumber: 27,
+      author: 'Bob Kane',
+      artist: 'Jerry Robinson',
+      releaseDate: '1939-05-01',
+      status: 'read',
+      description: 'First appearance of Batman',
+      rating: 5
+    },
+    {
+      id: 4,
+      title: 'Action Comics',
+      series: 'DC',
+      issueNumber: 1,
+      author: 'Jerry Siegel',
+      artist: 'Joe Shuster',
+      releaseDate: '1938-06-01',
+      status: 'reading',
+      description: 'The first appearance of Superman',
+      rating: 5
+    },
+    {
+      id: 5,
+      title: 'Watchmen',
+      series: 'DC',
+      issueNumber: 1,
+      author: 'Alan Moore',
+      artist: 'Dave Gibbons',
+      releaseDate: '1986-09-01',
+      status: 'read',
+      description: 'Groundbreaking superhero deconstruction',
+      rating: 5
+    }
+  ];
+  
+  comics = sampleComics;
+  persist();
+}
+
+// ===== DATA MANAGEMENT =====
+function openSettingsModal() {
+  document.getElementById('total-count').textContent = comics.length;
+  document.getElementById('read-count').textContent = comics.filter(c => c.status === 'read').length;
+  document.getElementById('reading-count').textContent = comics.filter(c => c.status === 'reading').length;
+  document.getElementById('wishlist-count').textContent = comics.filter(c => c.status === 'wishlist').length;
+  document.getElementById('timeline-count').textContent = timelines.length;
+  openModal('modal-settings');
+}
+
+function exportData() {
+  const data = {
+    comics,
+    timelines,
+    exportDate: new Date().toISOString(),
+    version: '1.0'
+  };
+  
+  const dataStr = JSON.stringify(data, null, 2);
+  const blob = new Blob([dataStr], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement('a');
+  link.href = url;
+  link.download = `comic-collection-${new Date().toISOString().split('T')[0]}.json`;
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+  URL.revokeObjectURL(url);
+  showToast('Collection exported!');
+}
+
+function importData() {
+  const input = document.createElement('input');
+  input.type = 'file';
+  input.accept = '.json';
+  input.onchange = (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      try {
+        const data = JSON.parse(event.target.result);
+        if (data.comics && data.timelines) {
+          comics = data.comics;
+          timelines = data.timelines;
+          persist();
+          renderCollection();
+          refreshTimelineSelector();
+          updateStats();
+          showToast('Collection imported successfully!');
+          closeModal('modal-settings');
+        } else {
+          showToast('Invalid file format!', 'error');
+        }
+      } catch (err) {
+        showToast('Error reading file!', 'error');
+      }
+    };
+    reader.readAsText(file);
+  };
+  input.click();
+}
+
+function clearAllData() {
+  if (confirm('⚠️ This will DELETE all your comics and timelines. Are you sure?')) {
+    if (confirm('Are you REALLY sure? This cannot be undone!')) {
+      comics = [];
+      timelines = [];
+      currentFilter = 'all';
+      searchQuery = '';
+      selectedTimelineId = null;
+      editingComicId = null;
+      persist();
+      renderCollection();
+      refreshTimelineSelector();
+      updateStats();
+      closeModal('modal-settings');
+      showToast('All data cleared!');
+    }
+  }
+}
 
   const grid = document.getElementById('grid');
   let list = comics;

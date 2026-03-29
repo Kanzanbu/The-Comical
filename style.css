@@ -112,6 +112,32 @@ header {
 .add-btn:hover  { transform: translate(-2px,-2px); box-shadow: 6px 6px 0 var(--ink); }
 .add-btn:active { transform: translate( 2px, 2px); box-shadow: 2px 2px 0 var(--ink); }
 
+/* Header Action Buttons */
+.header-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.header-btn {
+  background: transparent;
+  border: 2px solid var(--yellow);
+  padding: 8px 12px;
+  font-size: 1.2rem;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.1s;
+  color: var(--yellow);
+}
+
+.header-btn:hover {
+  background: var(--yellow);
+  color: var(--ink);
+  transform: scale(1.1);
+}
+
+.header-btn:active {
+  transform: scale(0.95);
+}
+
 /* ===== TAB NAVIGATION ===== */
 .tab-nav {
   display: flex;
@@ -620,6 +646,82 @@ form {
 .btn-primary { background: var(--blue); color: #fff; }
 .btn-secondary { background: transparent; color: var(--ink); }
 
+/* ===== SETTINGS MODAL ===== */
+.settings-section {
+  margin-bottom: 24px;
+  padding-bottom: 16px;
+  border-bottom: var(--border);
+}
+
+.settings-section h3 {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-weight: 700;
+  font-size: 1.1rem;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  margin-bottom: 12px;
+  color: var(--ink);
+}
+
+.settings-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.setting-btn {
+  border: var(--border);
+  padding: 12px 16px;
+  font-family: 'Barlow', sans-serif;
+  font-size: 0.95rem;
+  cursor: pointer;
+  box-shadow: 2px 2px 0 var(--ink);
+  transition: transform 0.1s, box-shadow 0.1s;
+  font-weight: 600;
+  letter-spacing: 1px;
+}
+
+.setting-btn:hover {
+  transform: translate(-2px,-2px);
+  box-shadow: 4px 4px 0 var(--ink);
+}
+
+.setting-btn-blue { background: var(--blue); color: #fff; }
+.setting-btn-green { background: var(--green); color: #fff; }
+.setting-btn-red { background: var(--red); color: #fff; }
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 12px;
+}
+
+.stat-box {
+  background: var(--paper);
+  border: var(--border);
+  padding: 16px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.stat-value {
+  font-family: 'Bangers', cursive;
+  font-size: 2rem;
+  color: var(--red);
+  text-shadow: 2px 2px 0 var(--yellow);
+}
+
+.stat-label {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-weight: 700;
+  font-size: 0.75rem;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: #555;
+}
+
 /* ===== TOAST NOTIFICATION ===== */
 .toast {
   position: fixed;
@@ -667,10 +769,46 @@ form {
     order: 3;
   }
 
-  .add-btn {
+  .header-actions {
     order: 2;
+  }
+
+  .add-btn {
+    order: 4;
+    width: 100%;
     padding: 10px 16px;
     font-size: 1.1rem;
+  }
+
+  .header-btn {
+    padding: 10px 12px;
+    font-size: 1.1rem;
+  }
+
+  .settings-section {
+    margin-bottom: 16px;
+    padding-bottom: 12px;
+  }
+
+  .settings-actions {
+    gap: 8px;
+  }
+
+  .setting-btn {
+    padding: 10px 12px;
+    font-size: 0.85rem;
+  }
+
+  .stats-grid {
+    gap: 8px;
+  }
+
+  .stat-box {
+    padding: 12px;
+  }
+
+  .stat-value {
+    font-size: 1.5rem;
   }
 
   .tab-nav {
@@ -717,7 +855,7 @@ form {
     width: 100%;
     max-width: none;
     padding: 10px 12px;
-    font-size: 16px; /* Prevents zoom on iOS */
+    font-size: 16px;
   }
 
   .grid {
@@ -781,7 +919,7 @@ form {
     width: 100%;
     min-width: auto;
     padding: 10px 12px;
-    font-size: 16px; /* Prevents zoom on iOS */
+    font-size: 16px;
   }
 
   .tl-btn {
@@ -817,8 +955,8 @@ form {
   .form-group input,
   .form-group select,
   .form-group textarea {
-    padding: 12px; /* Touch-friendly size */
-    font-size: 16px; /* Prevents zoom on iOS */
+    padding: 12px;
+    font-size: 16px;
     border-width: 2px;
   }
 
