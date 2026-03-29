@@ -176,79 +176,120 @@ function generateId() {
 }
 
 function onAddBtn() {
-  editingComicId = null;
-  document.getElementById('modal-title').textContent = 'Add New Issue';
-  clearComicForm();
-  openModal('modal-issue');
+  try {
+    editingComicId = null;
+    const titleElement = document.getElementById('modal-title');
+    if (titleElement) {
+      titleElement.textContent = 'Add New Issue';
+    }
+    clearComicForm();
+    openModal('modal-issue');
+  } catch (error) {
+    console.error('Error opening add issue modal:', error);
+    showToast('Error opening form!', 'error');
+  }
 }
 
 function clearComicForm() {
-  document.getElementById('issue-title').value = '';
-  document.getElementById('issue-series').value = '';
-  document.getElementById('issue-number').value = '';
-  document.getElementById('issue-author').value = '';
-  document.getElementById('issue-artist').value = '';
-  document.getElementById('issue-date').value = '';
-  document.getElementById('issue-status').value = 'unread';
-  document.getElementById('issue-description').value = '';
-  document.getElementById('issue-rating').value = '';
+  try {
+    const fields = [
+      'issue-title',
+      'issue-series',
+      'issue-number',
+      'issue-author',
+      'issue-artist',
+      'issue-date',
+      'issue-description',
+      'issue-rating'
+    ];
+    
+    fields.forEach(fieldId => {
+      const field = document.getElementById(fieldId);
+      if (field) {
+        field.value = '';
+      }
+    });
+    
+    const statusField = document.getElementById('issue-status');
+    if (statusField) {
+      statusField.value = 'unread';
+    }
+  } catch (error) {
+    console.error('Error clearing form:', error);
+  }
 }
 
 function saveIssue(event) {
   event.preventDefault();
   
-  const title = document.getElementById('issue-title').value.trim();
-  if (!title) {
-    showToast('Comic title is required!', 'error');
-    return;
-  }
-  
-  const comic = {
-    id: editingComicId || generateId(),
-    title,
-    series: document.getElementById('issue-series').value.trim(),
-    issueNumber: document.getElementById('issue-number').value,
-    author: document.getElementById('issue-author').value.trim(),
-    artist: document.getElementById('issue-artist').value.trim(),
-    releaseDate: document.getElementById('issue-date').value,
-    status: document.getElementById('issue-status').value,
-    description: document.getElementById('issue-description').value.trim(),
-    rating: parseFloat(document.getElementById('issue-rating').value) || null
-  };
-  
-  if (editingComicId) {
-    const index = comics.findIndex(c => c.id === editingComicId);
-    if (index !== -1) {
-      comics[index] = comic;
-      showToast('Comic updated!');
+  try {
+    const title = document.getElementById('issue-title').value.trim();
+    if (!title) {
+      showToast('Comic title is required!', 'error');
+      return;
     }
-  } else {
-    comics.push(comic);
-    showToast('Comic added!');
+    
+    const issueNumberValue = document.getElementById('issue-number').value.trim();
+    const ratingValue = document.getElementById('issue-rating').value.trim();
+    
+    const comic = {
+      id: editingComicId || generateId(),
+      title,
+      series: document.getElementById('issue-series').value.trim() || '',
+      issueNumber: issueNumberValue ? parseInt(issueNumberValue) : null,
+      author: document.getElementById('issue-author').value.trim() || '',
+      artist: document.getElementById('issue-artist').value.trim() || '',
+      releaseDate: document.getElementById('issue-date').value || '',
+      status: document.getElementById('issue-status').value,
+      description: document.getElementById('issue-description').value.trim() || '',
+      rating: ratingValue ? parseFloat(ratingValue) : null
+    };
+    
+    if (editingComicId) {
+      const index = comics.findIndex(c => c.id === editingComicId);
+      if (index !== -1) {
+        comics[index] = comic;
+        showToast('Comic updated!');
+      }
+    } else {
+      comics.push(comic);
+      showToast('Comic added!');
+    }
+    
+    persist();
+    renderCollection();
+    closeModal('modal-issue');
+  } catch (error) {
+    console.error('Error saving issue:', error);
+    showToast('Error saving comic!', 'error');
   }
-  
-  persist();
-  renderCollection();
-  closeModal('modal-issue');
 }
 
 function editComic(id) {
-  const comic = comics.find(c => c.id === id);
-  if (!comic) return;
-  
-  editingComicId = id;
-  document.getElementById('modal-title').textContent = 'Edit Issue';
-  document.getElementById('issue-title').value = comic.title;
-  document.getElementById('issue-series').value = comic.series || '';
-  document.getElementById('issue-number').value = comic.issueNumber || '';
-  document.getElementById('issue-author').value = comic.author || '';
-  document.getElementById('issue-artist').value = comic.artist || '';
-  document.getElementById('issue-date').value = comic.releaseDate || '';
-  document.getElementById('issue-status').value = comic.status;
-  document.getElementById('issue-description').value = comic.description || '';
-  document.getElementById('issue-rating').value = comic.rating || '';
-  
-  openModal('modal-issue');
+  try {
+    const comic = comics.find(c => c.id === id);
+    if (!comic) {
+      showToast('Comic not found!', 'error');
+      return;
+    }
+    
+    editingComicId = id;
+    document.getElementById('modal-title').textContent = 'Edit Issue';
+    document.getElementById('issue-title').value = comic.title || '';
+    document.getElementById('issue-series').value = comic.series || '';
+    document.getElementById('issue-number').value = comic.issueNumber || '';
+    document.getElementById('issue-author').value = comic.author || '';
+    document.getElementById('issue-artist').value = comic.artist || '';
+    document.getElementById('issue-date').value = comic.releaseDate || '';
+    document.getElementById('issue-status').value = comic.status || 'unread';
+    document.getElementById('issue-description').value = comic.description || '';
+    document.getElementById('issue-rating').value = comic.rating || '';
+    
+    openModal('modal-issue');
+  } catch (error) {
+    console.error('Error editing comic:', error);
+    showToast('Error opening comic for editing!', 'error');
+  }
 }
 
 function deleteComic(event, id) {
@@ -269,14 +310,15 @@ function refreshTimelineSelector() {
 }
 
 function selectTimeline(id) {
-  selectedTimelineId = id || null;
+  // Convert string ID to number if it's not empty
+  selectedTimelineId = id && id !== '' ? parseInt(id) : null;
   const addBtn = document.getElementById('tl-add-btn');
   const delBtn = document.getElementById('tl-del-btn');
-  
-  if (id) {
+
+  if (id && id !== '') {
     addBtn.style.display = 'block';
     delBtn.style.display = 'block';
-    renderTimeline(id);
+    renderTimeline(parseInt(id));
   } else {
     addBtn.style.display = 'none';
     delBtn.style.display = 'none';
@@ -305,26 +347,41 @@ function renderTimeline(timelineId) {
     return;
   }
   
-  container.innerHTML = '<h2 style="padding: 0 0 16px 0;border-bottom: var(--border);margin-bottom: 16px;">' + 
-    escapeHtml(timeline.name) + '</h2>' +
-    timeline.issues.map((issueId, index) => {
-      const comic = comics.find(c => c.id === issueId);
-      if (!comic) return '';
-      return `
-        <div class="timeline-entry">
-          <div class="timeline-entry-number">${index + 1}</div>
-          <div class="timeline-entry-info">
-            <div class="timeline-entry-title">${escapeHtml(comic.title)}</div>
-            <div class="timeline-entry-meta">
-              ${comic.series ? `${escapeHtml(comic.series)}` : ''} 
-              ${comic.issueNumber ? `#${comic.issueNumber}` : ''}
-              ${comic.status ? `• ${getStatusLabel(comic.status)}` : ''}
+  const timelineHTML = `
+    <div class="timeline-header">
+      <h2>${escapeHtml(timeline.name)}</h2>
+      ${timeline.description ? `<p class="timeline-description">${escapeHtml(timeline.description)}</p>` : ''}
+    </div>
+    <div class="visual-timeline">
+      <div class="timeline-line"></div>
+      <div class="timeline-issues">
+        ${timeline.issues.map((issueId, index) => {
+          const comic = comics.find(c => c.id === issueId);
+          if (!comic) return '';
+          const isEven = index % 2 === 0;
+          const statusColor = comic.status === 'read' ? '#1a4d4d' : comic.status === 'reading' ? '#1a3d66' : comic.status === 'wishlist' ? '#661111' : '#444';
+          return `
+            <div class="timeline-node ${isEven ? 'left' : 'right'}" style="--order: ${index}">
+              <div class="timeline-node-dot"></div>
+              <div class="timeline-node-card" style="--status-color: ${statusColor}">
+                <div class="node-card-number">${index + 1}</div>
+                <div class="node-card-content">
+                  <div class="node-card-title">${escapeHtml(comic.title)}</div>
+                  <div class="node-card-series">${comic.series ? escapeHtml(comic.series) : 'Comic'}${comic.issueNumber ? ` #${comic.issueNumber}` : ''}</div>
+                  <div class="node-card-status badge-${comic.status}">${getStatusLabel(comic.status)}</div>
+                  ${comic.releaseDate ? `<div class="node-card-date">${comic.releaseDate}</div>` : ''}
+                  ${comic.rating ? `<div class="node-card-rating">⭐ ${comic.rating}/5</div>` : ''}
+                </div>
+                <button class="node-card-remove" onclick="removeFromTimeline(${timelineId}, ${issueId})" title="Remove from timeline">✕</button>
+              </div>
             </div>
-          </div>
-          <button style="background: var(--red); color: #fff; border: var(--border); padding: 6px 12px; cursor: pointer;" onclick="removeFromTimeline(${timelineId}, ${issueId})">Remove</button>
-        </div>
-      `;
-    }).join('');
+          `;
+        }).join('')}
+      </div>
+    </div>
+  `;
+  
+  container.innerHTML = timelineHTML;
 }
 
 function openNewTimelineModal() {
@@ -357,40 +414,94 @@ function saveTimeline(event) {
 }
 
 function openAddToTimelineModal() {
-  if (!selectedTimelineId) {
-    showToast('Select a timeline first!', 'error');
-    return;
+  try {
+    if (!selectedTimelineId) {
+      showToast('Select a timeline first!', 'error');
+      return;
+    }
+
+    // Find the timeline and validate it exists
+    const timeline = timelines.find(t => t.id === selectedTimelineId);
+    if (!timeline) {
+      // If timeline not found, refresh selector and show error
+      refreshTimelineSelector();
+      showToast('Timeline not found! Please select a timeline from the dropdown.', 'error');
+      return;
+    }
+
+    // Get available comics (not already in timeline)
+    const availableComics = comics.filter(c => !timeline.issues.includes(c.id));
+
+    if (availableComics.length === 0) {
+      showToast('All comics are already in this timeline!', 'error');
+      return;
+    }
+
+    const select = document.getElementById('timeline-issue-select');
+    if (!select) {
+      showToast('Form element not found!', 'error');
+      return;
+    }
+
+    // Populate select with available comics
+    select.innerHTML = '<option value="">Choose an issue...</option>' +
+      availableComics.map(c => `<option value="${c.id}">${escapeHtml(c.title)} - ${escapeHtml(c.series || 'N/A')}</option>`).join('');
+
+    // Set default order
+    const orderField = document.getElementById('timeline-order');
+    if (orderField) {
+      orderField.value = timeline.issues.length + 1;
+    }
+
+openModal('modal-add-to-timeline');
+  } catch (error) {
+    console.error('Error opening add to timeline modal:', error);
+    showToast('Error opening form!', 'error');
   }
-  
-  const select = document.getElementById('timeline-issue-select');
-  const timeline = timelines.find(t => t.id === selectedTimelineId);
-  const availableComics = comics.filter(c => !timeline.issues.includes(c.id));
-  
-  select.innerHTML = '<option value="">Choose an issue...</option>' +
-    availableComics.map(c => `<option value="${c.id}">${escapeHtml(c.title)} - ${escapeHtml(c.series || 'N/A')}</option>`).join('');
-  
-  document.getElementById('timeline-order').value = timeline.issues.length + 1;
-  openModal('modal-add-to-timeline');
 }
 
 function addIssueToTimeline(event) {
   event.preventDefault();
   
-  if (!selectedTimelineId) return;
-  
-  const comicId = parseInt(document.getElementById('timeline-issue-select').value);
-  if (!comicId) {
-    showToast('Select an issue!', 'error');
-    return;
-  }
-  
-  const timeline = timelines.find(t => t.id === selectedTimelineId);
-  if (timeline && !timeline.issues.includes(comicId)) {
+  try {
+    if (!selectedTimelineId) {
+      showToast('No timeline selected!', 'error');
+      return;
+    }
+    
+    const comicId = parseInt(document.getElementById('timeline-issue-select').value);
+    if (!comicId) {
+      showToast('Select an issue!', 'error');
+      return;
+    }
+    
+    const timeline = timelines.find(t => t.id === selectedTimelineId);
+    if (!timeline) {
+      showToast('Timeline not found!', 'error');
+      return;
+    }
+    
+    // Check if already in timeline
+    if (timeline.issues.includes(comicId)) {
+      showToast('Issue already in timeline!', 'error');
+      return;
+    }
+    
+    // Add the issue to timeline
     timeline.issues.push(comicId);
     showToast('Issue added to timeline!');
+    
+    // Save and refresh
     persist();
     renderTimeline(selectedTimelineId);
     closeModal('modal-add-to-timeline');
+    
+    // Clear the form for next use
+    document.getElementById('timeline-issue-select').value = '';
+    document.getElementById('timeline-order').value = '';
+  } catch (error) {
+    console.error('Error adding issue to timeline:', error);
+    showToast('Error adding issue!', 'error');
   }
 }
 
@@ -571,7 +682,23 @@ function initializeSampleData() {
     }
   ];
   
+  const sampleTimelines = [
+    {
+      id: Date.now(),
+      name: 'Marvel Origin Story',
+      description: 'The birth of Marvel heroes',
+      issues: [1, 2]
+    },
+    {
+      id: Date.now() + 1,
+      name: 'DC Legends',
+      description: 'The greatest DC heroes',
+      issues: [3, 4, 5]
+    }
+  ];
+  
   comics = sampleComics;
+  timelines = sampleTimelines;
   persist();
 }
 
