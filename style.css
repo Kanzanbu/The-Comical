@@ -494,6 +494,8 @@ header {
   z-index: 1000;
   align-items: center;
   justify-content: center;
+  padding: 0;
+  overflow-y: auto;
 }
 
 .modal[style*="display: block"],
@@ -511,6 +513,7 @@ header {
   overflow-y: auto;
   position: relative;
   animation: popIn 0.3s ease-out;
+  margin: auto;
 }
 
 .modal-close {
@@ -640,16 +643,34 @@ form {
 }
 
 /* ===== RESPONSIVE ===== */
+@media (max-width: 1024px) {
+  .grid {
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  }
+}
+
 @media (max-width: 768px) {
-  .header-statistics {
-    flex: none;
-    gap: 16px;
+  header {
+    padding: 12px 16px;
+    flex-direction: column;
+    gap: 12px;
   }
 
-  .grid {
-    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-    gap: 16px;
-    padding: 16px;
+  .logo {
+    font-size: 2rem;
+    letter-spacing: 2px;
+    order: 1;
+  }
+
+  .header-statistics {
+    width: 100%;
+    order: 3;
+  }
+
+  .add-btn {
+    order: 2;
+    padding: 10px 16px;
+    font-size: 1.1rem;
   }
 
   .tab-nav {
@@ -657,20 +678,448 @@ form {
   }
 
   .tab-btn {
-    padding: 10px 16px;
+    flex: 1;
+    min-width: 120px;
+    padding: 12px 16px;
     font-size: 0.95rem;
+    letter-spacing: 1px;
+    border-right: none;
+    border-bottom: var(--border);
+  }
+
+  .tab-btn.active::after {
+    bottom: -3px;
+    height: 3px;
   }
 
   .filter-bar {
     padding: 12px 16px;
+    gap: 8px;
+  }
+
+  .filter-label {
+    width: 100%;
+    display: block;
+    margin-bottom: 8px;
   }
 
   .filter-btn {
-    padding: 4px 12px;
+    padding: 8px 12px;
     font-size: 0.8rem;
+    letter-spacing: 0.5px;
+  }
+
+  .search-bar {
+    padding: 12px 16px;
+  }
+
+  .search-input {
+    width: 100%;
+    max-width: none;
+    padding: 10px 12px;
+    font-size: 16px; /* Prevents zoom on iOS */
+  }
+
+  .grid {
+    grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+    gap: 12px;
+    padding: 12px;
+  }
+
+  .card {
+    border-width: 2px;
+  }
+
+  .card:hover {
+    transform: translate(-2px, -2px) rotate(-0.5deg);
+    box-shadow: 4px 4px 0 var(--ink);
+  }
+
+  .card-body {
+    padding: 8px 10px;
+    gap: 3px;
+  }
+
+  .card-title {
+    font-size: 0.85rem;
+    line-height: 1.1;
+  }
+
+  .card-series {
+    font-size: 0.7rem;
+  }
+
+  .card-issue {
+    font-size: 0.7rem;
+  }
+
+  .status-badge {
+    padding: 2px 6px;
+    font-size: 0.65rem;
+    margin-top: 4px;
+  }
+
+  .card-delete {
+    width: 28px;
+    height: 28px;
+    top: 4px;
+    left: 4px;
+  }
+
+  .timeline-toolbar {
+    padding: 12px 16px;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .tl-label {
+    width: 100%;
+    display: block;
+  }
+
+  .tl-select {
+    width: 100%;
+    min-width: auto;
+    padding: 10px 12px;
+    font-size: 16px; /* Prevents zoom on iOS */
+  }
+
+  .tl-btn {
+    padding: 10px 16px;
+    font-size: 1rem;
+    width: 100%;
+  }
+
+  .tl-btn-red {
+    margin-left: 0;
   }
 
   .modal-content {
     width: 95%;
+    max-height: 95vh;
+    border-width: 2px;
+  }
+
+  .modal-content h2 {
+    font-size: 1.4rem;
+    padding: 16px 16px 8px;
+  }
+
+  form {
+    padding: 16px;
+    gap: 12px;
+  }
+
+  .form-group label {
+    font-size: 0.8rem;
+  }
+
+  .form-group input,
+  .form-group select,
+  .form-group textarea {
+    padding: 12px; /* Touch-friendly size */
+    font-size: 16px; /* Prevents zoom on iOS */
+    border-width: 2px;
+  }
+
+  .form-row {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
+  .form-actions {
+    flex-direction: column;
+  }
+
+  .btn {
+    width: 100%;
+    padding: 12px 16px;
+    font-size: 1rem;
+  }
+
+  .toast {
+    bottom: 12px;
+    right: 12px;
+    left: 12px;
+    padding: 12px 16px;
+    font-size: 0.85rem;
+    border-width: 2px;
+  }
+
+  .timeline-entry {
+    padding: 12px;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+
+  .timeline-entry-number {
+    font-size: 1.4rem;
+    min-width: 30px;
+  }
+
+  .timeline-entry-info {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .timeline-entry-title {
+    font-size: 0.95rem;
+  }
+
+  .timeline-entry-meta {
+    font-size: 0.8rem;
+  }
+
+  .empty-state {
+    padding: 40px 16px;
+  }
+
+  .empty-state .big-icon {
+    font-size: 3rem;
+    margin-bottom: 12px;
+  }
+
+  .empty-state h2 {
+    font-size: 1.5rem;
+    letter-spacing: 2px;
+  }
+
+  .empty-state p {
+    font-size: 0.9rem;
+  }
+
+  .no-tl-empty h2 {
+    font-size: 1.4rem;
+  }
+
+  .no-tl-empty p {
+    font-size: 0.9rem;
+  }
+}
+
+@media (max-width: 480px) {
+  * {
+    --shadow: 2px 2px 0 var(--ink);
+  }
+
+  header {
+    padding: 10px 12px;
+    gap: 8px;
+  }
+
+  .logo {
+    font-size: 1.6rem;
+    text-shadow: 2px 2px 0 var(--red);
+  }
+
+  .logo span {
+    display: none;
+  }
+
+  .stat-item strong {
+    font-size: 1.2rem;
+  }
+
+  .stat-item span {
+    font-size: 0.65rem;
+  }
+
+  .add-btn {
+    padding: 8px 12px;
+    font-size: 0.95rem;
+    letter-spacing: 1px;
+    box-shadow: 2px 2px 0 var(--ink);
+  }
+
+  .tab-btn {
+    font-size: 0.85rem;
+    padding: 10px 12px;
+    min-width: 100px;
+  }
+
+  .filter-bar {
+    padding: 10px 12px;
+  }
+
+  .filter-btn {
+    padding: 6px 10px;
+    font-size: 0.7rem;
+    min-width: auto;
+  }
+
+  .search-bar {
+    padding: 10px 12px;
+  }
+
+  .search-input {
+    padding: 8px 10px;
+    font-size: 14px;
+    height: 40px; /* Touch-friendly */
+  }
+
+  .grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
+    padding: 8px;
+  }
+
+  .card {
+    border-width: 2px;
+  }
+
+  .card-cover,
+  .cover-placeholder {
+    border-width: 2px;
+  }
+
+  .card-body {
+    padding: 6px 8px;
+  }
+
+  .card-title {
+    font-size: 0.75rem;
+  }
+
+  .card-series,
+  .card-issue {
+    font-size: 0.65rem;
+  }
+
+  .status-badge {
+    padding: 2px 4px;
+    font-size: 0.6rem;
+  }
+
+  .timeline-toolbar {
+    padding: 10px 12px;
+    gap: 8px;
+  }
+
+  .tl-select,
+  form input,
+  form select,
+  form textarea {
+    font-size: 16px;
+    padding: 10px;
+  }
+
+  .tl-btn {
+    padding: 8px 12px;
+    font-size: 0.9rem;
+    box-shadow: 2px 2px 0 var(--ink);
+  }
+
+  .modal-content {
+    border-width: 2px;
+  }
+
+  .modal-content h2 {
+    font-size: 1.2rem;
+  }
+
+  .modal-close {
+    font-size: 1.5rem;
+  }
+
+  form {
+    padding: 12px;
+    gap: 10px;
+  }
+
+  .form-group label {
+    font-size: 0.75rem;
+    letter-spacing: 0.5px;
+  }
+
+  .form-group input,
+  .form-group select,
+  .form-group textarea {
+    padding: 10px;
+    border-width: 2px;
+    font-size: 14px;
+  }
+
+  .btn {
+    padding: 10px 12px;
+    font-size: 0.9rem;
+    box-shadow: 2px 2px 0 var(--ink);
+  }
+
+  .btn:hover {
+    transform: translate(-1px, -1px);
+    box-shadow: 3px 3px 0 var(--ink);
+  }
+
+  .toast {
+    font-size: 0.8rem;
+    padding: 10px 12px;
+    right: 8px;
+    left: 8px;
+    bottom: 8px;
+  }
+
+  .timeline-entry {
+    padding: 8px;
+  }
+
+  .timeline-entry-number {
+    font-size: 1.1rem;
+  }
+
+  .timeline-entry-title {
+    font-size: 0.85rem;
+  }
+
+  .timeline-entry-meta {
+    font-size: 0.75rem;
+  }
+
+  .empty-state {
+    padding: 30px 12px;
+  }
+
+  .empty-state .big-icon {
+    font-size: 2.5rem;
+  }
+
+  .empty-state h2 {
+    font-size: 1.2rem;
+  }
+
+  .no-tl-empty h2 {
+    font-size: 1.1rem;
+  }
+}
+
+@media (max-width: 360px) {
+  .grid {
+    grid-template-columns: 1fr;
+  }
+
+  .filter-btn {
+    padding: 5px 8px;
+    font-size: 0.65rem;
+  }
+
+  .card-title {
+    font-size: 0.7rem;
+  }
+
+  .card-series,
+  .card-issue {
+    font-size: 0.6rem;
+  }
+
+  .tab-btn {
+    font-size: 0.75rem;
+    padding: 8px 8px;
+  }
+
+  .stat-item span {
+    font-size: 0.6rem;
+  }
+
+  .stat-item strong {
+    font-size: 1rem;
   }
 }

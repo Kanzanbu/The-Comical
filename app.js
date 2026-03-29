@@ -401,6 +401,30 @@ document.addEventListener('DOMContentLoaded', () => {
   updateStats();
   renderCollection();
   refreshTimelineSelector();
+  
+  // Mobile menu improvements
+  const searchInput = document.getElementById('searchInput');
+  if (searchInput) {
+    searchInput.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        searchInput.blur();
+      }
+    });
+  }
+  
+  // Prevent double-tap zoom on buttons (improves responsiveness)
+  document.addEventListener('touchend', (e) => {
+    if (e.target.matches('button, input, select, textarea')) {
+      e.preventDefault();
+    }
+  }, false);
+});
+
+// Close modals when clicking outside
+document.addEventListener('click', (e) => {
+  if (e.target.classList.contains('modal')) {
+    e.target.style.display = 'none';
+  }
 });
 
   const grid = document.getElementById('grid');
