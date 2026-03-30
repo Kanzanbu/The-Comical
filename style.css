@@ -544,17 +544,15 @@ body.dark-mode .tl-label {
   font-weight: 600;
   font-size: 0.9rem;
   background: var(--panel);
-  color: #fff;
+  color: #000; /* Changed to black text */
   outline: none;
   cursor: pointer;
   min-width: 200px;
 }
-
 body.dark-mode .tl-select {
   color: #fff;
   background: #0a0a0a;
 }
-
 .tl-btn {
   border: var(--border);
   padding: 8px 18px;
