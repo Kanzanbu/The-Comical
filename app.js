@@ -130,10 +130,12 @@ function renderCollection() {
   
   grid.innerHTML = filtered.map(comic => `
     <div class="card" onclick="editComic(${comic.id})">
+      ${comic.imageUrl ? `<img src="${escapeHtml(comic.imageUrl)}" alt="${escapeHtml(comic.title)} cover" class="card-cover-img" onerror="this.style.display='none'"/>` : `
       <div class="cover-placeholder">
         <span class="icon">📖</span>
         <span>${escapeHtml(comic.series || 'Comic')}</span>
       </div>
+      `}
       <div class="card-body">
         <div class="card-title">${escapeHtml(comic.title)}</div>
         ${comic.series ? `<div class="card-series">${escapeHtml(comic.series)}</div>` : ''}
@@ -242,6 +244,7 @@ function saveIssue(event) {
       releaseDate: document.getElementById('issue-date').value || '',
       status: document.getElementById('issue-status').value,
       description: document.getElementById('issue-description').value.trim() || '',
+      imageUrl: document.getElementById('issue-image').value.trim() || '',
       rating: ratingValue ? parseFloat(ratingValue) : null
     };
     
@@ -283,6 +286,7 @@ function editComic(id) {
     document.getElementById('issue-date').value = comic.releaseDate || '';
     document.getElementById('issue-status').value = comic.status || 'unread';
     document.getElementById('issue-description').value = comic.description || '';
+    document.getElementById('issue-image').value = comic.imageUrl || '';
     document.getElementById('issue-rating').value = comic.rating || '';
     
     openModal('modal-issue');
@@ -678,7 +682,8 @@ function initializeSampleData() {
       releaseDate: '1986-09-01',
       status: 'read',
       description: 'Groundbreaking superhero deconstruction',
-      rating: 5
+      rating: 5,
+      imageUrl: 'https://upload.wikimedia.org/wikipedia/en/a/a5/Watchmen%2C_issue_1.png'
     }
   ];
   
