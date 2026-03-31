@@ -777,12 +777,14 @@ function renderEncyclopedia() {
 
 function renderEncyclopediaContent() {
   const content = document.getElementById('encyclopedia-content');
+  const statusText = document.getElementById('encyclopedia-results');
   if (!encyclopediaData) return;
   
   let sections = [];
   const filter = encyclopediaCurrentFilter;
-  const query = encyclopediaSearchQuery.toLowerCase();
-  
+  const query = encyclopediaSearchQuery.trim().toLowerCase();
+
+  const sortByName = (items) => items.slice().sort((a, b) => (String(a.name || '').localeCompare(String(b.name || ''))));
   const filterByQuery = (items, fields) => {
     if (!query) return items;
     return items.filter(item => 
@@ -794,30 +796,32 @@ function renderEncyclopediaContent() {
   };
   
   if (filter === 'all' || filter === 'publishers') {
-    const publishers = filterByQuery(encyclopediaData.publishers, ['name', 'notes']);
-    if (publishers.length > 0) {
+    const publishers = filterByQuery(encyclopediaData.publishers || [], ['name', 'notes']);
+    const sortedPub = sortByName(publishers);
+    if (sortedPub.length > 0) {
       sections.push({
         title: '🏢 Publishers',
         id: 'publishers',
-        items: publishers.map(p => ({
-          name: p.name,
-          subtitle: p.is_comics_publisher ? 'Comics Publisher' : 'Other',
-          description: p.notes
+        items: sortedPub.map(p => ({
+          name: p.name || 'Unknown Publisher',
+          subtitle: p.is_comics_publisher ? 'Comics Publisher' : 'Publisher',
+          description: p.notes || 'No additional info available.'
         }))
       });
     }
   }
   
   if (filter === 'all' || filter === 'series') {
-    const series = filterByQuery(encyclopediaData.series, ['name', 'year_began', 'year_ended']);
-    if (series.length > 0) {
+    const series = filterByQuery(encyclopediaData.series || [], ['name', 'year_began', 'year_ended']);
+    const sortedSeries = sortByName(series);
+    if (sortedSeries.length > 0) {
       sections.push({
         title: '📚 Comic Series',
         id: 'series',
-        items: series.map(s => {
-          const publisher = encyclopediaData.publishers.find(p => p.id === s.publisher_id);
+        items: sortedSeries.map(s => {
+          const publisher = (encyclopediaData.publishers || []).find(p => p.id === s.publisher_id);
           return {
-            name: s.name,
+            name: s.name || 'Untitled Series',
             subtitle: publisher ? publisher.name : 'Unknown Publisher',
             description: `${s.year_began || '?'} - ${s.year_ended || 'Present'}`
           };
@@ -827,12 +831,13 @@ function renderEncyclopediaContent() {
   }
   
   if (filter === 'all' || filter === 'characters') {
-    const characters = filterByQuery(encyclopediaData.characters, ['name', 'first_appearance']);
-    if (characters.length > 0) {
+    const characters = filterByQuery(encyclopediaData.characters || [], ['name', 'first_appearance']);
+    const sortedCharacters = sortByName(characters);
+    if (sortedCharacters.length > 0) {
       sections.push({
         title: '🦸 Characters',
         id: 'characters',
-        items: characters.map(c => ({
+        items: sortedCharacters.map(c => ({
           name: normalizeCharacterName(c),
           subtitle: 'Character',
           description: `First appearance: ${c.first_appearance || 'Unknown'}`
@@ -842,13 +847,14 @@ function renderEncyclopediaContent() {
   }
   
   if (filter === 'all' || filter === 'creators') {
-    const creators = filterByQuery(encyclopediaData.creators, ['name', 'birth_date', 'death_date']);
-    if (creators.length > 0) {
+    const creators = filterByQuery(encyclopediaData.creators || [], ['name', 'birth_date', 'death_date']);
+    const sortedCreators = sortByName(creators);
+    if (sortedCreators.length > 0) {
       sections.push({
         title: '✏️ Creators',
         id: 'creators',
-        items: creators.map(c => ({
-          name: c.name,
+        items: sortedCreators.map(c => ({
+          name: c.name || 'Unknown Creator',
           subtitle: 'Creator',
           description: formatDateRange(c.birth_date, c.death_date)
         }))
@@ -857,33 +863,40 @@ function renderEncyclopediaContent() {
   }
   
   if (filter === 'all' || filter === 'universes') {
-    const universes = filterByQuery(encyclopediaData.universes, ['name', 'description']);
-    if (universes.length > 0) {
+    const universes = filterByQuery(encyclopediaData.universes || [], ['name', 'description']);
+    const sortedUniverses = sortByName(universes);
+    if (sortedUniverses.length > 0) {
       sections.push({
         title: '🌍 Universes',
         id: 'universes',
-        items: universes.map(u => ({
-          name: u.name,
+        items: sortedUniverses.map(u => ({
+          name: u.name || 'Unknown Universe',
           subtitle: 'Universe',
-          description: u.description
+          description: u.description || 'No description.'
         }))
       });
     }
   }
   
   if (filter === 'all' || filter === 'groups') {
-    const groups = filterByQuery(encyclopediaData.groups, ['name', 'description']);
-    if (groups.length > 0) {
+    const groups = filterByQuery(encyclopediaData.groups || [], ['name', 'description']);
+    const sortedGroups = sortByName(groups);
+    if (sortedGroups.length > 0) {
       sections.push({
         title: '👥 Groups & Teams',
         id: 'groups',
-        items: groups.map(g => ({
-          name: g.name,
+        items: sortedGroups.map(g => ({
+          name: g.name || 'Unknown Group',
           subtitle: 'Team',
-          description: g.description
+          description: g.description || 'No description.'
         }))
       });
     }
+  }
+  
+  const totalCount = sections.reduce((sum, section) => sum + section.items.length, 0);
+  if (statusText) {
+    statusText.textContent = `Showing ${totalCount} ${totalCount === 1 ? 'entry' : 'entries'} (${filter === 'all' ? 'all categories' : filter})`;
   }
   
   if (sections.length === 0) {
