@@ -1703,3 +1703,275 @@ body.dark-mode .stat-label {
     font-size: 1.3rem;
   }
 }
+
+/* ===== ENCYCLOPEDIA STYLES ===== */
+.encyclopedia-toolbar {
+  padding: 16px 32px;
+  background: #fff;
+  border-bottom: var(--border);
+}
+
+body.dark-mode .encyclopedia-toolbar {
+  background: #111;
+}
+
+.encyclopedia-search {
+  margin-bottom: 16px;
+}
+
+.encyclopedia-filters {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.ency-filter-btn {
+  background: transparent;
+  border: 2px solid var(--ink);
+  padding: 6px 14px;
+  font-family: 'Barlow Condensed', sans-serif;
+  font-weight: 600;
+  font-size: 0.85rem;
+  letter-spacing: 1px;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+}
+
+.ency-filter-btn:hover,
+.ency-filter-btn.active {
+  background: var(--ink);
+  color: #fff;
+}
+
+body.dark-mode .ency-filter-btn {
+  border-color: var(--yellow);
+  color: var(--yellow);
+}
+
+body.dark-mode .ency-filter-btn:hover,
+body.dark-mode .ency-filter-btn.active {
+  background: var(--yellow);
+  color: #000;
+}
+
+.encyclopedia-stats {
+  display: flex;
+  gap: 16px;
+  padding: 16px 32px;
+  background: var(--panel);
+  border-bottom: var(--border);
+  flex-wrap: wrap;
+}
+
+body.dark-mode .encyclopedia-stats {
+  background: #1a1a1a;
+}
+
+.ency-stat {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 0.9rem;
+  font-weight: 600;
+  letter-spacing: 1px;
+}
+
+.ency-stat strong {
+  color: var(--red);
+  font-size: 1.1rem;
+}
+
+body.dark-mode .ency-stat strong {
+  color: var(--yellow);
+}
+
+.encyclopedia-content {
+  padding: 24px 32px;
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+}
+
+.encyclopedia-section {
+  animation: slideUp 0.3s ease-out;
+}
+
+.encyclopedia-section-title {
+  font-family: 'Bangers', cursive;
+  font-size: 1.6rem;
+  letter-spacing: 2px;
+  color: var(--ink);
+  margin-bottom: 16px;
+  padding-bottom: 8px;
+  border-bottom: 2px solid var(--yellow);
+}
+
+body.dark-mode .encyclopedia-section-title {
+  color: var(--yellow);
+}
+
+.encyclopedia-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 16px;
+}
+
+.encyclopedia-item {
+  background: var(--panel);
+  border: 2px solid var(--ink);
+  padding: 16px;
+  transition: transform 0.15s, box-shadow 0.15s;
+}
+
+.encyclopedia-item:hover {
+  transform: translate(-2px, -2px);
+  box-shadow: 4px 4px 0 var(--ink);
+}
+
+body.dark-mode .encyclopedia-item {
+  background: #1a1a1a;
+  border-color: var(--yellow);
+}
+
+.ency-item-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.ency-item-name {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-weight: 700;
+  font-size: 1.1rem;
+  letter-spacing: 1px;
+  color: var(--ink);
+  margin: 0;
+  flex: 1;
+}
+
+body.dark-mode .ency-item-name {
+  color: var(--yellow);
+}
+
+.ency-item-subtitle {
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: #666;
+  background: var(--paper);
+  padding: 2px 8px;
+  border: 1px solid #ddd;
+  white-space: nowrap;
+}
+
+body.dark-mode .ency-item-subtitle {
+  color: #aaa;
+  background: #333;
+  border-color: #555;
+}
+
+.ency-item-description {
+  font-size: 0.85rem;
+  color: #666;
+  margin: 0;
+  line-height: 1.4;
+}
+
+body.dark-mode .ency-item-description {
+  color: #aaa;
+}
+
+.encyclopedia-footer {
+  padding: 16px 32px;
+  text-align: center;
+  border-top: var(--border);
+  background: var(--panel);
+}
+
+body.dark-mode .encyclopedia-footer {
+  background: #1a1a1a;
+}
+
+.encyclopedia-footer p {
+  font-size: 0.8rem;
+  color: #888;
+}
+
+body.dark-mode .encyclopedia-footer p {
+  color: #666;
+}
+
+/* Encyclopedia responsive styles */
+@media (max-width: 768px) {
+  .encyclopedia-toolbar {
+    padding: 12px 16px;
+  }
+
+  .encyclopedia-filters {
+    gap: 6px;
+  }
+
+  .ency-filter-btn {
+    padding: 5px 10px;
+    font-size: 0.75rem;
+  }
+
+  .encyclopedia-stats {
+    padding: 12px 16px;
+    gap: 12px;
+  }
+
+  .ency-stat {
+    font-size: 0.8rem;
+  }
+
+  .encyclopedia-content {
+    padding: 16px;
+    gap: 24px;
+  }
+
+  .encyclopedia-section-title {
+    font-size: 1.3rem;
+  }
+
+  .encyclopedia-list {
+    grid-template-columns: 1fr;
+  }
+
+  .encyclopedia-footer {
+    padding: 12px 16px;
+  }
+}
+
+@media (max-width: 480px) {
+  .ency-filter-btn {
+    padding: 4px 8px;
+    font-size: 0.7rem;
+  }
+
+  .ency-stat {
+    font-size: 0.75rem;
+  }
+
+  .ency-stat strong {
+    font-size: 0.95rem;
+  }
+
+  .encyclopedia-section-title {
+    font-size: 1.1rem;
+  }
+
+  .ency-item-name {
+    font-size: 1rem;
+  }
+
+  .ency-item-subtitle {
+    font-size: 0.65rem;
+    padding: 1px 6px;
+  }
+
+  .ency-item-description {
+    font-size: 0.8rem;
+  }
+}

@@ -33,10 +33,27 @@ let searchQuery = '';
 let selectedTimelineId = null;
 let editingComicId = null;
 
+// ===== ENCYCLOPEDIA STATE =====
+let encyclopediaData = null;
+let encyclopediaCurrentFilter = 'all';
+let encyclopediaSearchQuery = '';
+
 // ===== UTILITY FUNCTIONS =====
 function escapeHtml(text) {
   const map = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' };
   return String(text || '').replace(/[&<>"']/g, m => map[m]);
+}
+
+function looksLikeDateTime(value) {
+  return typeof value === 'string' && /^\d{4}-\d{2}-\d{2}(?:[ T]\d{2}:\d{2}:\d{2}(?:\.\d+)?)?$/.test(value);
+}
+
+function normalizeCharacterName(character) {
+  if (!character) return 'Unknown';
+  if (looksLikeDateTime(character.name) && character.first_appearance) {
+    return character.first_appearance;
+  }
+  return character.name || 'Unknown';
 }
 
 function showToast(message, type = 'success') {
@@ -87,9 +104,12 @@ function switchTab(tab, button) {
   // Hide/show content
   document.getElementById('view-collection').style.display = tab === 'collection' ? 'block' : 'none';
   document.getElementById('view-timeline').style.display = tab === 'timeline' ? 'block' : 'none';
+  document.getElementById('view-encyclopedia').style.display = tab === 'encyclopedia' ? 'block' : 'none';
   
   if (tab === 'timeline') {
     refreshTimelineSelector();
+  } else if (tab === 'encyclopedia') {
+    loadEncyclopediaData();
   }
 }
 
@@ -705,6 +725,225 @@ function initializeSampleData() {
   comics = sampleComics;
   timelines = sampleTimelines;
   persist();
+}
+
+// ===== ENCYCLOPEDIA FUNCTIONS =====
+async function loadEncyclopediaData() {
+  if (encyclopediaData) {
+    renderEncyclopedia();
+    return;
+  }
+  
+  try {
+    const response = await fetch('Database/encyclopedia_data.json');
+    if (!response.ok) {
+      throw new Error('Failed to load encyclopedia data');
+    }
+    encyclopediaData = await response.json();
+    renderEncyclopedia();
+  } catch (error) {
+    console.error('Error loading encyclopedia data:', error);
+    document.getElementById('encyclopedia-content').innerHTML = `
+      <div class="empty-state">
+        <div class="big-icon">📚</div>
+        <h2>ENCYCLOPEDIA UNAVAILABLE</h2>
+        <p>Could not load encyclopedia data. Make sure encyclopedia_data.json exists in the Database folder.</p>
+      </div>
+    `;
+  }
+}
+
+function renderEncyclopedia() {
+  if (!encyclopediaData) return;
+  
+  // Update stats
+  const statsEl = document.getElementById('encyclopedia-stats');
+  statsEl.innerHTML = `
+    <div class="ency-stat">🏢 <strong>${encyclopediaData.publishers.length}</strong> Publishers</div>
+    <div class="ency-stat">📚 <strong>${encyclopediaData.series.length}</strong> Series</div>
+    <div class="ency-stat">🦸 <strong>${encyclopediaData.characters.length}</strong> Characters</div>
+    <div class="ency-stat">✏️ <strong>${encyclopediaData.creators.length}</strong> Creators</div>
+    <div class="ency-stat">🌍 <strong>${encyclopediaData.universes.length}</strong> Universes</div>
+    <div class="ency-stat">👥 <strong>${encyclopediaData.groups.length}</strong> Groups</div>
+  `;
+  
+  // Update last updated date
+  if (encyclopediaData.last_updated) {
+    document.getElementById('ency-last-updated').textContent = encyclopediaData.last_updated;
+  }
+  
+  renderEncyclopediaContent();
+}
+
+function renderEncyclopediaContent() {
+  const content = document.getElementById('encyclopedia-content');
+  if (!encyclopediaData) return;
+  
+  let sections = [];
+  const filter = encyclopediaCurrentFilter;
+  const query = encyclopediaSearchQuery.toLowerCase();
+  
+  const filterByQuery = (items, fields) => {
+    if (!query) return items;
+    return items.filter(item => 
+      fields.some(field => {
+        const val = item[field];
+        return val && String(val).toLowerCase().includes(query);
+      })
+    );
+  };
+  
+  if (filter === 'all' || filter === 'publishers') {
+    const publishers = filterByQuery(encyclopediaData.publishers, ['name', 'notes']);
+    if (publishers.length > 0) {
+      sections.push({
+        title: '🏢 Publishers',
+        id: 'publishers',
+        items: publishers.map(p => ({
+          name: p.name,
+          subtitle: p.is_comics_publisher ? 'Comics Publisher' : 'Other',
+          description: p.notes
+        }))
+      });
+    }
+  }
+  
+  if (filter === 'all' || filter === 'series') {
+    const series = filterByQuery(encyclopediaData.series, ['name', 'year_began', 'year_ended']);
+    if (series.length > 0) {
+      sections.push({
+        title: '📚 Comic Series',
+        id: 'series',
+        items: series.map(s => {
+          const publisher = encyclopediaData.publishers.find(p => p.id === s.publisher_id);
+          return {
+            name: s.name,
+            subtitle: publisher ? publisher.name : 'Unknown Publisher',
+            description: `${s.year_began || '?'} - ${s.year_ended || 'Present'}`
+          };
+        })
+      });
+    }
+  }
+  
+  if (filter === 'all' || filter === 'characters') {
+    const characters = filterByQuery(encyclopediaData.characters, ['name', 'first_appearance']);
+    if (characters.length > 0) {
+      sections.push({
+        title: '🦸 Characters',
+        id: 'characters',
+        items: characters.map(c => ({
+          name: normalizeCharacterName(c),
+          subtitle: 'Character',
+          description: `First appearance: ${c.first_appearance || 'Unknown'}`
+        }))
+      });
+    }
+  }
+  
+  if (filter === 'all' || filter === 'creators') {
+    const creators = filterByQuery(encyclopediaData.creators, ['name', 'birth_date', 'death_date']);
+    if (creators.length > 0) {
+      sections.push({
+        title: '✏️ Creators',
+        id: 'creators',
+        items: creators.map(c => ({
+          name: c.name,
+          subtitle: 'Creator',
+          description: formatDateRange(c.birth_date, c.death_date)
+        }))
+      });
+    }
+  }
+  
+  if (filter === 'all' || filter === 'universes') {
+    const universes = filterByQuery(encyclopediaData.universes, ['name', 'description']);
+    if (universes.length > 0) {
+      sections.push({
+        title: '🌍 Universes',
+        id: 'universes',
+        items: universes.map(u => ({
+          name: u.name,
+          subtitle: 'Universe',
+          description: u.description
+        }))
+      });
+    }
+  }
+  
+  if (filter === 'all' || filter === 'groups') {
+    const groups = filterByQuery(encyclopediaData.groups, ['name', 'description']);
+    if (groups.length > 0) {
+      sections.push({
+        title: '👥 Groups & Teams',
+        id: 'groups',
+        items: groups.map(g => ({
+          name: g.name,
+          subtitle: 'Team',
+          description: g.description
+        }))
+      });
+    }
+  }
+  
+  if (sections.length === 0) {
+    content.innerHTML = `
+      <div class="empty-state">
+        <div class="big-icon">🔍</div>
+        <h2>NO RESULTS FOUND</h2>
+        <p>No encyclopedia entries match your search criteria.</p>
+      </div>
+    `;
+    return;
+  }
+  
+  content.innerHTML = sections.map(section => `
+    <div class="encyclopedia-section">
+      <h2 class="encyclopedia-section-title">${section.title}</h2>
+      <div class="encyclopedia-list">
+        ${section.items.map(item => `
+          <div class="encyclopedia-item">
+            <div class="ency-item-header">
+              <h3 class="ency-item-name">${escapeHtml(item.name)}</h3>
+              <span class="ency-item-subtitle">${escapeHtml(item.subtitle)}</span>
+            </div>
+            ${item.description ? `<p class="ency-item-description">${escapeHtml(item.description)}</p>` : ''}
+          </div>
+        `).join('')}
+      </div>
+    </div>
+  `).join('');
+}
+
+function formatDateRange(birth, death) {
+  if (!birth) return 'Unknown dates';
+  const birthYear = birth.substring(0, 4);
+  if (death) {
+    const deathYear = death.substring(0, 4);
+    return `${birthYear} - ${deathYear}`;
+  }
+  return `b. ${birthYear}`;
+}
+
+function filterEncyclopedia(filter, button) {
+  encyclopediaCurrentFilter = filter;
+  
+  // Update button states
+  document.querySelectorAll('.ency-filter-btn').forEach(btn => btn.classList.remove('active'));
+  if (button) button.classList.add('active');
+  
+  // Update search query from input
+  const searchInput = document.getElementById('encyclopedia-search');
+  if (searchInput) {
+    encyclopediaSearchQuery = searchInput.value;
+  }
+  
+  renderEncyclopediaContent();
+}
+
+function searchEncyclopedia(query) {
+  encyclopediaSearchQuery = query;
+  renderEncyclopediaContent();
 }
 
 // ===== INITIALIZATION =====

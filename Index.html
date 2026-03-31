@@ -38,7 +38,7 @@
 <div class="tab-nav">
     <button class="tab-btn active" onclick="switchTab('collection', this)">📚 The Collection</button>
     <button class="tab-btn" onclick="switchTab('timeline', this)">📖 The Timeline</button>
-    <button class="tab-btn" onclick="switchTab('', this)">📖 The Encyclopedia</button>
+    <button class="tab-btn" onclick="switchTab('encyclopedia', this)">📖 The Encyclopedia</button>
 </div>
 
 <!-- Collection View -->
@@ -77,6 +77,35 @@
         </div>
         <div class="timeline-container" id="timeline-container">
             <!-- Timeline will be rendered here -->
+        </div>
+    </div>
+</div>
+
+<!-- Encyclopedia View -->
+<div id="view-encyclopedia" class="tab-content" style="display: none;">
+    <div class="container">
+        <div class="encyclopedia-toolbar">
+            <div class="encyclopedia-search">
+                <input type="text" id="encyclopedia-search" class="search-input" placeholder="🔍 Search encyclopedia..." oninput="searchEncyclopedia(this.value)">
+            </div>
+            <div class="encyclopedia-filters">
+                <button class="ency-filter-btn active" onclick="filterEncyclopedia('all', this)">All</button>
+                <button class="ency-filter-btn" onclick="filterEncyclopedia('publishers', this)">🏢 Publishers</button>
+                <button class="ency-filter-btn" onclick="filterEncyclopedia('series', this)">📚 Series</button>
+                <button class="ency-filter-btn" onclick="filterEncyclopedia('characters', this)">🦸 Characters</button>
+                <button class="ency-filter-btn" onclick="filterEncyclopedia('creators', this)">✏️ Creators</button>
+                <button class="ency-filter-btn" onclick="filterEncyclopedia('universes', this)">🌍 Universes</button>
+                <button class="ency-filter-btn" onclick="filterEncyclopedia('groups', this)">👥 Groups</button>
+            </div>
+        </div>
+        <div class="encyclopedia-stats" id="encyclopedia-stats">
+            <!-- Stats will be rendered here -->
+        </div>
+        <div class="encyclopedia-content" id="encyclopedia-content">
+            <!-- Encyclopedia content will be rendered here -->
+        </div>
+        <div class="encyclopedia-footer">
+            <p>Data source: Grand Comics Database (GCD) | Last updated: <span id="ency-last-updated">-</span></p>
         </div>
     </div>
 </div>
